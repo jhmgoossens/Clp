@@ -378,7 +378,7 @@ ClpQuadraticObjective::gradient(const ClpSimplex *model,
         }
       }
       if (model)
-        offset *= model->optimizationDirection() * model->objectiveScale();
+        offset *= /*model->optimizationDirection() **/ model->objectiveScale();
       return gradient_;
     }
   } else {

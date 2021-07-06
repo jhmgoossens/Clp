@@ -5802,8 +5802,11 @@ int OsiClpSolverInterface::readLp(const char *filename, const double epsilon)
   CoinLpIO m;
   m.passInMessageHandler(modelPtr_->messageHandler());
   *m.messagesPointer() = modelPtr_->coinMessages();
+  CoinPackedMatrix * quadratic = NULL;
   try {
     m.readLp(filename, epsilon);
+    // See if quadratic objective
+    quadratic = m.getQuadraticObjective();
   } catch (const CoinError& e) {
     printf("ERROR: %s::%s, %s\n",
       e.className().c_str(), e.methodName().c_str(), e.message().c_str());
@@ -5832,6 +5835,12 @@ int OsiClpSolverInterface::readLp(const char *filename, const double epsilon)
     originalObj = CoinCopyOfArray(m.getObjCoefficients(),numberColumns);
     for (int i=0;i < numberColumns;i++)
       originalObj[i] = - originalObj[i];
+    if (quadratic) {
+      int numberElements = quadratic->getNumElements();
+      double *element = quadratic->getMutableElements();
+      for (int i=0;i<numberElements;i++)
+	element[i] = -element[i];
+    }
     modelPtr_->setOptimizationDirection(-1.0);
     handler_->message(COIN_GENERAL_INFO, messages_)
       << "Switching back to maximization to get correct duals etc"
@@ -5864,6 +5873,12 @@ int OsiClpSolverInterface::readLp(const char *filename, const double epsilon)
       }
     }
     modelPtr_->copyInIntegerInformation(integer);
+  }
+  if (quadratic) {
+    const CoinBigIndex * start = quadratic->getVectorStarts();
+    const int * column = quadratic->getIndices();
+    const double * element = quadratic->getElements();
+    modelPtr_->loadQuadraticObjective(nCols,start,column,element);
   }
   // Always keep names
   int nameDiscipline;
