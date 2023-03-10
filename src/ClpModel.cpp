@@ -2961,7 +2961,7 @@ int ClpModel::readMps(const char *fileName,
       << fileName
       << time2 - time1 << CoinMessageEol;
     if (m.getInfinity()<0.0) {
-      modifyByIndicators(m);
+      modifyByIndicators();
     }
   } else {
     // errors
@@ -2976,10 +2976,16 @@ int ClpModel::readMps(const char *fileName,
    If bigM > 0.0 then use that,
    if < 0.0 use but try and improve */
 void
-ClpModel::modifyByIndicators(CoinMpsIO &m, double startBigM,
+ClpModel::modifyByIndicators(double startBigM,
 			  double bigM)
 {
   int numberIndicators = 0;
+  // get correct sign for bigM
+  int nTry=0;
+  if (bigM<0.0) {
+    bigM = -bigM;
+    nTry = 2;
+  }
   const int * row1 = matrix_->getIndices();
   const int * columnLength1 = matrix_->getVectorLengths();
   const CoinBigIndex * columnStart1 = matrix_->getVectorStarts();
@@ -3247,9 +3253,10 @@ ClpModel::modifyByIndicators(CoinMpsIO &m, double startBigM,
   }
   if (nExtra) {
     // redo names - use m version
+    std::vector<std::string> saveNames = rowNames_;
     rowNames_ = std::vector< std::string >();
     for (int iRow = 0; iRow < numberRows1; iRow++) {
-      const char *name = m.rowName(iRow);
+      const char *name = saveNames[iRow].c_str();
       lengthNames_ =
 	CoinMax(lengthNames_, static_cast<int>(strlen(name)));
       rowNames_.push_back(name);
@@ -3284,7 +3291,6 @@ ClpModel::modifyByIndicators(CoinMpsIO &m, double startBigM,
   model.setDualObjectiveLimit(COIN_DBL_MAX);
   double saveDirection = model.optimizationDirection();
   model.setOptimizationDirection(1.0);
-  int nTry=2;
   for (int iTry=0;iTry<nTry;iTry++) 
   {
     int numberColumns = model.numberColumns();
