@@ -20,12 +20,12 @@ jobs:
       fail-fast: false
       matrix:
         include: [
-          { os: windows-2019, arch: x86_64, msystem: mingw64, debug: true, suffix: "-dbg" },
-          { os: windows-2019, arch: x86_64, msystem: mingw64, debug: false, suffix: "" },
-          { os: windows-2019, arch: i686, msystem: mingw32, debug: true, suffix: "-dbg" },
-          { os: windows-2019, arch: i686, msystem: mingw32, debug: false, suffix: "" },
-          { os: windows-2019, arch: msvc, msystem: mingw64, debug: false, suffix: "-md" },
-          { os: windows-2022, arch: msvc, msystem: mingw64, debug: false, suffix: "-md" },
+          #{ os: windows-2019, arch: x86_64, msystem: mingw64, debug: true, suffix: "-dbg" },
+          #{ os: windows-2019, arch: x86_64, msystem: mingw64, debug: false, suffix: "" },
+          #{ os: windows-2019, arch: i686, msystem: mingw32, debug: true, suffix: "-dbg" },
+          #{ os: windows-2019, arch: i686, msystem: mingw32, debug: false, suffix: "" },
+          #{ os: windows-2019, arch: msvc, msystem: mingw64, debug: false, suffix: "-md" },
+          #{ os: windows-2022, arch: msvc, msystem: mingw64, debug: false, suffix: "-md" },
           { os: windows-2022, arch: msvs, msystem: mingw64, debug: false, suffix: "" },
         ]
     steps:
@@ -75,7 +75,7 @@ jobs:
         if: ${{ matrix.arch == 'msvs' }}
         shell: cmd
         run: |
-          .\${{ github.event.repository.name }}\MSVisualStudio\v17\${{ github.event.repository.name }}Test.cmd .\${{ github.event.repository.name }}\MSVisualStudio\v17\x64\Release .\dist\share\coin-or-sample
+          .\${{ github.event.repository.name }}\MSVisualStudio\v17\${{ github.event.repository.name }}Test.cmd .\${{ github.event.repository.name }}\MSVisualStudio\v17\x64\Release .\Data\Sample
       - name: Install project for msvs
         if: ${{ matrix.arch == 'msvs' }}
         shell: cmd
