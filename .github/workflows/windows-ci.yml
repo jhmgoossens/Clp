@@ -65,6 +65,7 @@ jobs:
           ADD_ARGS=()
           ADD_ARGS+=( --skip='ThirdParty/Metis ThirdParty/Mumps ThirdParty/Blas ThirdParty/Lapack' )
           ./coinbrew/coinbrew fetch ${{ github.event.repository.name }} --skip-update "${ADD_ARGS[@]}"
+          ./coinbrew/coinbrew build Data/Netlib
         shell: msys2 {0}
       - name: Build project for msvs
         if: ${{ matrix.arch == 'msvs' }}
