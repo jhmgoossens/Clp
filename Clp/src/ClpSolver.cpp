@@ -1728,9 +1728,7 @@ int ClpMain1(int argc, const char *argv[], AbcSimplex *models)
               } else {
                   fp = fopen(fileName.c_str(), "w");
                   if (!fp) {
-                      buffer.str("");
-                      buffer << "Unable to open file " << fileName.c_str();
-                      printGeneralMessage(model_, buffer.str());
+                      std::cout << "Unable to open file " << fileName << std::endl;
                       continue;
                   }
                   //OsiClpSolverInterface solver(model2);
